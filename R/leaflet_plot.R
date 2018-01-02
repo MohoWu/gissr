@@ -2,7 +2,7 @@
 #' 
 #' @param sp Spatial object to be plotted. 
 #'
-#' @param popup Popup variable to add to map. 
+#' @param popup Vector of variables to be used as a popup on the map. 
 #'
 #' @param force Should the projection be forced to WGS84? Default is \code{TRUE}.
 #' 
@@ -14,11 +14,13 @@
 #' 
 #' @author Stuart K. Grange
 #' 
+#' @return Invisible, a leaflet map. 
+#' 
 #' @import leaflet
 #' 
 #' @export
 leaflet_plot <- function(sp, popup = NULL, force = TRUE, colour = "#03F", 
-                         color = colour, opacity = 0.5, fill_opacity = 0.2) {
+                         opacity = 0.5, fill_opacity = 0.2) {
   
   # Find geom type
   sp_class <- sp_class(sp)
@@ -27,19 +29,55 @@ leaflet_plot <- function(sp, popup = NULL, force = TRUE, colour = "#03F",
   # Use name variable even if not declared
   if (grepl("data", sp_class, ignore.case = TRUE))
     if (is.null(popup) & "name" %in% names(sp@data)) popup <- "name"
-  
-  # Parse, allow mutiple fields
+
+  # Parse
   if (!is.null(popup)) {
+    
+    # Select variables in data slot, no comma to keep data frame structure
+    df_sp <- sp@data[popup]
+    
+    # Get variable names
+    names <- names(df_sp)
+    
+    # Give names column-wise 
+    popup_string <- apply(df_sp, 1, collapse_values_with_name, name = names)
+    
+    # Collapse row-wise, now just a vector
+    if (class(popup_string) == "matrix") 
+      popup_string <- apply(popup_string, 2, stringr::str_c, collapse = "<br>")
+
+    # Use a default
+    if (is.null(popup) && "name" %in% names(sp@data)) popup <- "name"
+    
+    if (!is.null(popup)) {
       
-      list_popups <- lapply(popup, 
-                            function(x) paste0(x, ": ", sp@data[[x]], "<br>"))
+      # Select variables in data slot, no comma to keep data frame structure
+      df_sp <- sp@data[popup]
       
-      list_popups_transpose <- lapply(1:nrow(sp@data), function(x) sapply(list_popups, `[`, x))
+      # Catch nas, make a string
+      df_sp[is.na(df_sp)] <- ""
       
-      popup <- sapply(list_popups_transpose, paste0, collapse = "")
+      # Get variable names
+      names <- names(df_sp)
       
+      # Give names column-wise
+      popup_string <- apply(df_sp, 1, collapse_values_with_name, name = names)
+      
+      # Collapse row-wise, now just a vector
+      if (class(popup_string) == "matrix")
+        popup_string <- apply(popup_string, 2, stringr::str_c, collapse = "<br>")
+      
+      # No names for the vector
+      popup_string <- unname(popup_string)
+      
+      # Reassign
+      popup <- popup_string
+      
+    }
+    
   }
   
+  # 
   # Projection force
   if (force) sp <- sp_transform(sp, warn = FALSE)
   
@@ -74,20 +112,32 @@ leaflet_plot <- function(sp, popup = NULL, force = TRUE, colour = "#03F",
   if (grepl("points", sp_class, ignore.case = TRUE)) {
     
     map <- map %>% 
-      addCircleMarkers(popup = popup, color = colour, opacity = opacity,
-                       fillOpacity = fill_opacity)
+      addCircleMarkers(
+        popup = popup, 
+        color = colour, 
+        opacity = opacity,
+        fillOpacity = fill_opacity
+      )
     
   } else if (grepl("lines", sp_class, ignore.case = TRUE)) {
     
     map <- map %>% 
-      addPolylines(popup = popup, color = colour, opacity = opacity,
-                   fillOpacity = fill_opacity)
+      addPolylines(
+        popup = popup, 
+        color = colour, 
+        opacity = opacity,
+        fillOpacity = fill_opacity
+      )
     
   } else if (grepl("polygons", sp_class, ignore.case = TRUE)) {
     
     map <- map %>% 
-      addPolygons(popup = popup, color = colour, opacity = opacity,
-                  fillOpacity = fill_opacity)
+      addPolygons(
+        popup = popup, 
+        color = colour, 
+        opacity = opacity,
+        fillOpacity = fill_opacity
+      )
     
   } else if (sp_class == "RasterLayer") {
     
@@ -97,10 +147,14 @@ leaflet_plot <- function(sp, popup = NULL, force = TRUE, colour = "#03F",
         group = "OpenStreetMap", 
         urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       ) %>% 
-      addRasterImage(sp, colors = "viridis")
+      addRasterImage(sp, colors = "viridis", opacity = opacity)
     
   }
   
   return(map)
   
 }
+
+
+collapse_values_with_name <- function(x, name, sep = ": ") 
+  stringr::str_c(name, sep, x)

@@ -12,13 +12,12 @@
 #' 
 #' @author Stuart K. Grange
 #' 
-#' @seealso \code{\link{gDistance}}, \code{\link{sp_transform}}
-#' 
 #' @param sp_1 Spatial object one. 
 #' 
 #' @param sp_2 Spatial object two. 
 #' 
-#' @param features Logical vector passed to \code{byid} in \code{\link[rgeos]{gDistance}}.
+#' @param features Should the function be applied to all features in 
+#' \code{sp_1}? 
 #' 
 #' @param unit If \code{"km"}, the returned vector is returned in kilometres 
 #' rather than metres. 
@@ -67,6 +66,8 @@
 #' # Thames's mouth. 
 #' 
 #' }
+#' 
+#' @seealso \code{\link{gDistance}}, \code{\link{sp_transform}}
 #' 
 #' @export
 sp_distance <- function(sp_1, sp_2, features = FALSE, unit = "m") {
