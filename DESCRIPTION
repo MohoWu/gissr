@@ -1,8 +1,8 @@
 Package: gissr
 Type: Package
 Title: Functions to make working with spatial data easier
-Version: 0.7.6
-Date: 2017-12-27
+Version: 0.8.3
+Date: 2017-04-03
 Authors@R: person("Stuart", "Grange", email = "s.k.grange@gmail.com", 
     role = c("cre", "aut"))
 Maintainer: Stuart K. Grange <s.k.grange@gmail.com>
@@ -33,8 +33,11 @@ Imports:
     XML,
     magrittr,
     spatstat,
-    gstat
+    gstat,
+    purrr
 Suggests:
-    threadr
+    threadr,
+    tidyr,
+    readr
 LazyLoad: yes
 RoxygenNote: 6.0.1
