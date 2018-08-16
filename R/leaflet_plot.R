@@ -116,15 +116,23 @@ leaflet_plot <- function(sp, popup = NULL, force = TRUE, colour = "#03F",
       if (is.numeric(sp[[colour]])) {
           if (is.null(col_group)) {
               
-              pal <- colorNumeric(palette, domain = sp[[colour]])
+              pal <- colorNumeric(palette, 
+                                  domain = sp[[colour]],
+                                  reverse = TRUE)
               
           } else if (col_group == "bin") {
               
-              pal <- colorBin(palette, domain = sp[[colour]], bins = n)
+              pal <- colorBin(palette, 
+                              domain = sp[[colour]], 
+                              bins = n,
+                              reverse = TRUE)
               
           } else if (col_group == "quantile") {
               
-              pal <- colorQuantile(palette, domain = sp[[colour]], n = n)
+              pal <- colorQuantile(palette, 
+                                   domain = sp[[colour]], 
+                                   n = n,
+                                   reverse = TRUE)
               
           }
           
@@ -198,10 +206,12 @@ leaflet_plot <- function(sp, popup = NULL, force = TRUE, colour = "#03F",
   if (length(colour) > 1) {
       
       map <- map %>%
-          addLegend(legend_pos, 
-                    pal = pal, 
-                    values = sp[[colour_col]],
-                    title = legend_title)
+          addLegend(
+              legend_pos,
+              pal = pal,
+              values = sp[[colour_col]],
+              title = legend_title
+          )
       
   }
   
