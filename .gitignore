@@ -1,3 +1,14 @@
+## Ignore R project files
 .Rproj.user
 .Rhistory
 *.Rproj
+
+## Ignore travis config file
+^\.travis\.yml$
+
+# Other documents
+data_sources.md
+.Rbuildignore
+gissr.Rproj
+
+

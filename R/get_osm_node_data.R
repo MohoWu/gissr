@@ -87,7 +87,8 @@ get_osm_node_data_worker <- function(url) {
     # Make tidy data frame
     df <- bind_rows(list_tidy) %>% 
       mutate(id = as.numeric(df_attributes$id)) %>% 
-      threadr::arrange_left("id")
+      select("id",
+             everything())
     
   }
   
@@ -159,6 +160,8 @@ extract_osm_tags <- function(x) {
 #' Function to scrape OpenStreetMap's way XML documents for data. 
 #' 
 #' @param id A vector os OpenStreetMap way IDs. 
+#' 
+#' @param progress Type of progress bar to display. 
 #' 
 #' @author Stuart K. Grange
 #' 
@@ -233,7 +236,8 @@ get_osm_way_data_worker <- function(id) {
   # Make tidy data frame
   df <- bind_rows(list_tidy) %>% 
     mutate(id = as.numeric(df_attributes$id)) %>% 
-    threadr::arrange_left("id")
+    select("id",
+           everything())
   
   # Create list
   list_return <- list(
@@ -327,7 +331,8 @@ get_osm_relation_data_worker <- function(id) {
   # Make tidy data frame
   df <- bind_rows(list_tidy) %>% 
     mutate(id = as.numeric(df_attributes$id)) %>% 
-    threadr::arrange_left("id")
+    select("id",
+           everything())
   
   # Create list
   list_return <- list(

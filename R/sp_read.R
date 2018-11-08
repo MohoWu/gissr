@@ -59,7 +59,7 @@
 #' sp_yemen <- sp_read("world.gdb", layer = "yemen", verbose = FALSE)
 #' 
 #' # Load a file by using a url
-#' file <- "http://www.gps-routes.co.uk/A55CD9/home.nsf/All/E03CB3E66AEAF5178025778200749F3F/$FILE/The%20Ridgeway.gpx"
+#' file <- "https://bit.ly/2FkUuAP"
 #' sp_ridgeway <- sp_read(file, layer = "routes") 
 #' 
 #' }
@@ -111,8 +111,8 @@ sp_read <- function(file, layer = NULL, geom = NULL, lower = TRUE,
   # Do some guess work for the layer string
   if (is.null(layer)) {
     
-    # No period because could be geojson too
-    if (grepl("json$", file, ignore.case = TRUE)) {
+    # Geojson files
+    if (grepl(".geojson$|.json$|.js$", file, ignore.case = TRUE)) {
     
       # File name with no extension
       layer <- basename(file)
@@ -221,15 +221,9 @@ sp_list_layers <- function(file) rgdal::ogrListLayers(path.expand(file))
 #' \code{geom} can be one of: \code{"points"}, \code{"lines"}, or 
 #' \code{"polygons"}. 
 #' 
-#' @examples 
-#' \dontrun{
-#' # Get infomation of the lines geom within a layer in a GeoJSON file
-#' sp_layer_info("../../data/points_and_lines.json", "OGRGeoJSON", 
-#'               geom = "lines")
-#' }
-#' 
 #' @export
 sp_layer_info <- function(file, layer, geom = NULL) {
+  
   # Expand path
   file <- path.expand(file)
   
